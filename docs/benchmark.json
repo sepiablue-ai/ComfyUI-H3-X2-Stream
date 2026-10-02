@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-02",
+  "groups": [
+    {
+      "steps": 4,
+      "chunks": 8,
+      "case": "case01",
+      "n": 3,
+      "run_ids": [
+        "confirm4c8_case01_r1",
+        "confirm4c8_case01_r2",
+        "confirm4c8_case01_r3"
+      ],
+      "seconds": [
+        59.006,
+        59.794,
+        60.3
+      ],
+      "mean": 59.699999999999996,
+      "median": 59.794,
+      "min": 59.006,
+      "max": 60.3,
+      "under60": 2,
+      "sampling_mean": 38.318425900000875,
+      "conditioning_mean": 7.890615766666694,
+      "decode_save_mean": 11.610420866666876,
+      "review_run": "confirm4c8_case01_r2"
+    },
+    {
+      "steps": 4,
+      "chunks": 8,
+      "case": "case02",
+      "n": 3,
+      "run_ids": [
+        "confirm4c8_case02_r1",
+        "confirm4c8_case02_r2",
+        "confirm4c8_case02_r3"
+      ],
+      "seconds": [
+        59.634,
+        59.783,
+        59.962
+      ],
+      "mean": 59.793,
+      "median": 59.783,
+      "min": 59.634,
+      "max": 59.962,
+      "under60": 3,
+      "sampling_mean": 38.42549060000116,
+      "conditioning_mean": 7.8375580999988115,
+      "decode_save_mean": 11.677413299999898,
+      "review_run": "confirm4c8_case02_r2"
+    },
+    {
+      "steps": 3,
+      "chunks": 8,
+      "case": "case01",
+      "n": 3,
+      "run_ids": [
+        "confirm3c8_case01_r1",
+        "confirm3c8_case01_r2",
+        "confirm3c8_case01_r3"
+      ],
+      "seconds": [
+        50.918,
+        51.864,
+        52.007
+      ],
+      "mean": 51.596333333333334,
+      "median": 51.864,
+      "min": 50.918,
+      "max": 52.007,
+      "under60": 3,
+      "sampling_mean": 30.184968566665095,
+      "conditioning_mean": 7.901096866666194,
+      "decode_save_mean": 11.650468133332955,
+      "review_run": "confirm3c8_case01_r2"
+    },
+    {
+      "steps": 3,
+      "chunks": 8,
+      "case": "case02",
+      "n": 3,
+      "run_ids": [
+        "confirm3c8_case02_r1",
+        "confirm3c8_case02_r2",
+        "confirm3c8_case02_r3"
+      ],
+      "seconds": [
+        51.387,
+        51.943,
+        51.737
+      ],
+      "mean": 51.689,
+      "median": 51.737,
+      "min": 51.387,
+      "max": 51.943,
+      "under60": 3,
+      "sampling_mean": 30.22652973333364,
+      "conditioning_mean": 7.904344399999293,
+      "decode_save_mean": 11.670479566666472,
+      "review_run": "confirm3c8_case02_r3"
+    }
+  ],
+  "scope": "544x960 sampling, 1088x1920 output, 124frames, 24fps, AAC; RTX4070; original prompts and seed43",
+  "timing": "ComfyUI execution_start to execution_success, after server startup; each confirmation uses cache-none and actually executes the requested NFE",
+  "excluded_from_timing": [
+    "server startup",
+    "one-time INT8 conversion",
+    "post-completion ffprobe/full decode verification"
+  ],
+  "baseline_case01": 86.725,
+  "baseline_case02": 82.68,
+  "source": "SayakaBenchmark FL2VA 017-matlow-fused4-sla5-x2vae, reproduced locally before packaging",
+  "benchmark_site": "https://sayakabenchmark.pages.dev/",
+  "qualification": "Prototype measurements, not a fresh package benchmark; 4-step passes under 60 seconds in 5 of 6 confirmation runs. 3-step has visible sleeve changes."
+}

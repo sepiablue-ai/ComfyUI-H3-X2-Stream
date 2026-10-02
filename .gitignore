@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+models/
+output/
+input/
+temp/
+cache/
+*.safetensors
+*.pt
+*.mp4
+*.log
+*.lock

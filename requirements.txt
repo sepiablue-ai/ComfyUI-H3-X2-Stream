@@ -1,0 +1,4 @@
+# Install with the Python belonging to ComfyUI. Do not replace PyTorch here.
+av>=17.0.0
+safetensors>=0.7.0
+comfy-kitchen>=0.2.35

@@ -1,0 +1,9 @@
+{
+  "1": {
+    "class_type": "H3X2PrepareINT8VAE",
+    "inputs": {
+      "source_vae": "MiniMax-H3-X2-Detail-v1.safetensors",
+      "output_name": "MiniMax-H3-X2-Detail-v1-decoder-int8-convrot.safetensors"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-02",
+  "comfyui_commit": "1568e6cfd04586a4b3c4e1817ea7dde09b1bf9e7",
+  "comfyui_version": "0.37.0",
+  "gpu": "NVIDIA GeForce RTX 4070 12 GB",
+  "os": "Windows",
+  "python": "3.13.13",
+  "torch": "2.14.0+cu130",
+  "comfy_kitchen": "0.2.35",
+  "av": "18.1.0",
+  "safetensors": "0.8.0",
+  "environment_scope": "Fresh official ComfyUI clone and independent custom-node copy; existing standard Python environment reused read-only; not a fresh Python dependency installation.",
+  "runs": [
+    {"name": "prepare_int8", "prompt_id": "d4efc306-f7de-40f1-96a6-e53e35b3fb2d", "status": "success", "seconds": 58.129},
+    {"name": "package_case01", "prompt_id": "d5021afa-e574-4b0f-b88a-b19c7e79a4e2", "status": "success", "seconds": 64.615, "state": "First full generation after restart; VAE already converted"},
+    {"name": "gui_case02", "prompt_id": "2d8b93e1-a74b-46e5-9dda-31c97e01bc18", "status": "success", "seconds": 59.130, "state": "Same server, GUI workflow; VAE already converted"}
+  ],
+  "gui_round_trip_identical": true,
+  "all_892_converted_tensors_identical_to_prototype": true,
+  "automated_tests_passed": 8,
+  "videos_full_decode_passed": 2,
+  "video_format": {"width": 1088, "height": 1920, "frames": 124, "fps": 24, "video_codec": "h264", "audio_codec": "aac", "audio_sample_rate": 32000, "audio_channels": 2},
+  "protected_benchmark_audit": {"files": 87, "sha256_checked": 44, "modified": 0, "created": 0},
+  "unverified": ["Manager installation from public Git URL", "Registry publication", "fresh Python dependency installation", "other GPUs", "Linux", "other dimensions/fps", "GPU process-crash recovery"]
+}

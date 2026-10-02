@@ -1,0 +1,81 @@
+{
+  "last_node_id": 2,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "H3X2PrepareINT8VAE",
+      "pos": [
+        80,
+        200
+      ],
+      "size": [
+        680,
+        180
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "links": [],
+          "slot_index": 0
+        },
+        {
+          "name": "conversion_report",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "H3X2PrepareINT8VAE"
+      },
+      "widgets_values": [
+        "MiniMax-H3-X2-Detail-v1.safetensors",
+        "MiniMax-H3-X2-Detail-v1-decoder-int8-convrot.safetensors"
+      ],
+      "title": "H3 X2 Prepare INT8 VAE"
+    },
+    {
+      "id": 2,
+      "type": "Note",
+      "pos": [
+        20,
+        -310
+      ],
+      "size": [
+        740,
+        280
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ONE-TIME PREPARATION / 初回だけ実行\nDownload the original X2 Detail v1 model from the model author (see README), and place it in models/vae.\nQueue this graph. It verifies SHA-256, converts 144 decoder Linear weights and saves in models/vae/h3_x2_stream.\nIt never overwrites an existing model. No model download or Python install happens here.\nAfter success, refresh ComfyUI and open fl2va_4step_case01.json."
+      ],
+      "title": "H3 X2 Stream / Read first",
+      "color": "#243448",
+      "bgcolor": "#34465d"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5,
+      "offset": [
+        40,
+        340
+      ]
+    }
+  },
+  "version": 0.4
+}

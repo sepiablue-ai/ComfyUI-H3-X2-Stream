@@ -1,0 +1,277 @@
+{
+  "119": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_int8_convrot.safetensors"
+    },
+    "_meta": {
+      "title": "Video VAE"
+    }
+  },
+  "120": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "_meta": {
+      "title": "Audio VAE"
+    }
+  },
+  "128": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Text Encoder"
+    }
+  },
+  "127": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_fused_refdelta_r1024_turbo8_mystic07_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "MATLOW Fused Turbo INT8 ConvRot"
+    }
+  },
+  "140": {
+    "class_type": "H3X2ChunkFeedForward",
+    "inputs": {
+      "model": [
+        "127",
+        0
+      ],
+      "chunks": 8,
+      "seq_threshold": 4096
+    },
+    "_meta": {
+      "title": "MiniMax H3 FFN chunks8 / threshold4096"
+    }
+  },
+  "900": {
+    "class_type": "BlockSparseAttention",
+    "inputs": {
+      "model": [
+        "140",
+        0
+      ],
+      "selection": "sla",
+      "selection.keep_percent": 5.0,
+      "start_percent": 0.0,
+      "end_percent": 1.0,
+      "dense_blocks": "",
+      "min_tokens": 12288,
+      "extra_tokens": 256,
+      "sink_conditioning": "exact_kv_and_rows",
+      "verbose": true
+    },
+    "_meta": {
+      "title": "Model Sparse Attention (SLA 5%)"
+    }
+  },
+  "142": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": {
+      "model": [
+        "900",
+        0
+      ],
+      "shift_video": 12.0,
+      "shift_audio": 3.0
+    },
+    "_meta": {
+      "title": "Sigma Shift 12/3"
+    }
+  },
+  "901": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "00143-1291803371_1024x1792_center_crop.png"
+    },
+    "_meta": {
+      "title": "First Frame"
+    }
+  },
+  "131": {
+    "class_type": "MiniMaxH3ImageToVideo",
+    "inputs": {
+      "clip": [
+        "128",
+        0
+      ],
+      "vae": [
+        "119",
+        0
+      ],
+      "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Clean 2D anime action illustration. Begin with the exact young woman, dark hair, white shirt, red tie, dark coat with red lining, gloves, red sword, stance, and arched interior shown in <Picture 1>. In one continuous shot she raises the sword from its lowered starting position and swings it in a broad horizontal arc, then pivots her feet and follows with a second strong diagonal sweep. The blade stays visibly connected to her hand and traces clear, controlled motion through the air. Her coat and hair react to the turns. The camera tracks her with small amplitude to keep her face, hands, and full sword motion readable, then steadies as she finishes in a balanced ready stance. Preserve her identity, outfit, sword design, and the original setting throughout. No dialogue.\n\noverall_soundscape: Two distinct sword swishes cut through the quiet interior ambience. Her shoes shift against the floor while her coat flutters during each turn.\n\nnon_diegetic_music: N/A",
+      "width": 544,
+      "height": 960,
+      "length": 124,
+      "first_frame": [
+        "901_crop",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MiniMax H3 Image to Video"
+    }
+  },
+  "129": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 43
+    },
+    "_meta": {
+      "title": "Seed 43"
+    }
+  },
+  "135": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "res_multistep"
+    },
+    "_meta": {
+      "title": "res_multistep"
+    }
+  },
+  "124": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "142",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 4,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "simple / 4 steps"
+    }
+  },
+  "126": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "142",
+        0
+      ],
+      "conditioning": [
+        "131",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "125": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "129",
+        0
+      ],
+      "guider": [
+        "126",
+        0
+      ],
+      "sampler": [
+        "135",
+        0
+      ],
+      "sigmas": [
+        "124",
+        0
+      ],
+      "latent_image": [
+        "131",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "121": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "125",
+        0
+      ],
+      "vae": [
+        "120",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Audio Decode"
+    }
+  },
+  "92": {
+    "class_type": "H3X2StreamSave",
+    "inputs": {
+      "samples": [
+        "125",
+        0
+      ],
+      "vae": [
+        "920",
+        0
+      ],
+      "audio": [
+        "121",
+        0
+      ],
+      "filename_prefix": "H3_X2_Stream/case02",
+      "fps": 24.0,
+      "nvenc_gpu": 0,
+      "cq": 18,
+      "fp16_accumulation": true
+    },
+    "_meta": {
+      "title": "X2 decode and asynchronous NVENC save"
+    }
+  },
+  "920": {
+    "class_type": "H3X2PrepareINT8VAE",
+    "inputs": {
+      "source_vae": "MiniMax-H3-X2-Detail-v1.safetensors",
+      "output_name": "MiniMax-H3-X2-Detail-v1-decoder-int8-convrot.safetensors"
+    },
+    "_meta": {
+      "title": "Prepare once / reuse INT8 X2 VAE"
+    }
+  },
+  "901_resize": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "901",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": 549,
+      "height": 960,
+      "crop": "disabled"
+    }
+  },
+  "901_crop": {
+    "class_type": "ImageCrop",
+    "inputs": {
+      "image": [
+        "901_resize",
+        0
+      ],
+      "width": 544,
+      "height": 960,
+      "x": 2,
+      "y": 0
+    }
+  }
+}

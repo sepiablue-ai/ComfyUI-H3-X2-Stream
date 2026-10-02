@@ -1,0 +1,16 @@
+[project]
+name = "comfyui-h3-x2-stream"
+version = "0.1.0"
+description = "MiniMax H3 X2 VAE INT8 preparation and asynchronous NVENC output for ComfyUI"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
+dependencies = ["av>=17.0.0", "safetensors>=0.7.0", "comfy-kitchen>=0.2.35"]
+
+[project.urls]
+Repository = "https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream"
+Issues = "https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream/issues"
+
+# Registry publication is optional. No PublisherId is claimed or registered.
+[tool.comfy]
+DisplayName = "H3 X2 Stream"
