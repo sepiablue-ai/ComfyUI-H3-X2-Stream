@@ -45,11 +45,11 @@
         "127",
         0
       ],
-      "chunks": 8,
+      "chunks": 0,
       "seq_threshold": 4096
     },
     "_meta": {
-      "title": "MiniMax H3 FFN chunks8 / threshold4096"
+      "title": "MiniMax H3 FFN 2048 tokens / threshold4096"
     }
   },
   "900": {

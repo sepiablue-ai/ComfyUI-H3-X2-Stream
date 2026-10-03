@@ -12,7 +12,7 @@ On an **RTX 4070 12 GB**, the development configuration generated **1088 × 1920
 |---|---|
 | **H3 X2 Prepare INT8 VAE** | Converts the original X2 Detail v1 checkpoint once, saves it locally, and returns a usable VAE. Subsequent executions reuse the converted file. |
 | **H3 X2 Decode + Stream Save** | Preserves ComfyUI's native H3 spatial/temporal blending, unpacks X2 RGB, and overlaps the next decode chunk with H.264 NVENC encoding. Optional audio is saved as AAC. |
-| **H3 Chunk FeedForward (X2 Stream)** | Splits H3 FFN token work into chunks. The tested preset uses 8 chunks and a 4096-token threshold. |
+| **H3 Chunk FeedForward (X2 Stream)** | Splits H3 FFN token work into 2048-token chunks, merging a small final chunk. Default: `chunks=0`, threshold 4096. |
 
 No additional KJNodes or LatentUpscaler installation is required for the included examples. No ComfyUI core files are overwritten. The preparation node does not download models or install Python packages.
 
@@ -72,11 +72,29 @@ Converted files are written only to the active ComfyUI's `models/vae/h3_x2_strea
 
 Videos are saved to the configured ComfyUI output directory, normally `output/H3_X2_Stream/`. Failed encodes remove their temporary video instead of leaving a completed-looking MP4. Only one video latent and mono/stereo audio are supported per execution. No `IMAGE` output is produced because streaming avoids allocating the whole decoded clip; use a conventional decoder when downstream image-processing nodes are needed.
 
-The adapter derives spatial dimensions and frame count from the latent, and exposes fps and encoder quality. The **validated preset** is 544 × 960 sampling → 1088 × 1920 output, 124 frames at 24 fps. Other geometries/frame rates are not included in the current performance/quality validation. Native 256-pixel tiles with 64-pixel overlap are retained. Video lengths must follow H3's 5 + 17*k frame grid.
+The adapter derives spatial dimensions and frame count from the latent, and exposes fps and encoder quality. The **validated preset** is 544 × 960 sampling → 1088 × 1920 output, 124 frames at 24 fps. Additional generation sizes of 512 × 512, 768 × 512 and 768 × 1024 were tested with X2 output at the same frame count and fps. Other frame rates have not been validated. Native 256-pixel tiles with 64-pixel overlap are retained. Video lengths must follow H3's 5 + 17*k frame grid.
+
+The FFN node's `chunks=0` selects automatic 2048-token chunks. If the last chunk has fewer than 1024 tokens, it is merged into the preceding chunk; for example, 2048 + 85 becomes 2133. Inputs at or below `seq_threshold` (default 4096) run without splitting. `chunks=1` disables the patch; values of 2 or more retain the previous equal-count splitting. Existing saved workflows keep their value: set `chunks` to **0** to enable the new mode. Bundled examples already use 0.
 
 API examples are under [`examples/api`](examples/api). Advanced users may run `quantization.py SOURCE OUTPUT --device cuda:0` using ComfyUI's Python; the GUI preparation node is the normal path.
 
 ## RTX 4070 measurements
+
+### 2048-token FFN update — 2026-10-03
+
+On the same RTX 4070 12 GB, a 4-step FL2VA Case 01 comparison at 544 × 960 reduced median execution time from **60.319 s** (8 chunks) to **59.212 s** (automatic 2048-token chunks), with three runs per mode. Median sampler time fell from 38.700 s to 37.509 s. The automatic-mode runs took 59.212 / 59.284 / 58.884 s. Model, prompt, seed, steps and attention settings were held fixed within each comparison.
+
+Three additional first-frame-conditioned cases used different images and prompts, with 124 frames at 24 fps and generated audio:
+
+| Generation → X2 output | 8 chunks, seconds | Automatic 2048, seconds |
+|---|---:|---:|
+| 512 × 512 → 1024 × 1024 | 50.491 | 48.951 |
+| 768 × 512 → 1536 × 1024 | 49.856 | 49.152 |
+| 768 × 1024 → 1536 × 2048 | 83.444 | 82.295 |
+
+These additional sizes have **one run per mode**, so the differences are indicative, not repeated-run estimates. Timing covers `execution_start` through `execution_success`, including decoding and saving, but excludes server startup and media checks. There were no execution-cache hits; OS/compiler cache and initialization effects were not isolated. All six videos passed full decoding without OOM. The square pair had identical decoded RGB and audio PCM; the other pairs differed, so bit-identical output is not guaranteed. SLA used 5% keep with `min_tokens=12288`; the square case was below that threshold and used dense attention in both modes.
+
+### Original streaming measurements — 2026-10-02
 
 Measured on **2026-10-02**, Windows, RTX 4070 12 GB. Seed 43, 124 frames / 24 fps (about 5.17 s), native audio, 544 × 960 sampling and 1088 × 1920 X2 output. The baseline is FL2VA `017-matlow-fused4-sla5-x2vae` from [Sayaka Benchmark](https://sayakabenchmark.pages.dev/).
 

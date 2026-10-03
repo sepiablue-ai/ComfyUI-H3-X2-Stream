@@ -180,10 +180,10 @@
         "Node name for S&R": "H3X2ChunkFeedForward"
       },
       "widgets_values": [
-        8,
+        0,
         4096
       ],
-      "title": "MiniMax H3 FFN chunks8 / threshold4096"
+      "title": "MiniMax H3 FFN 2048 tokens / threshold4096"
     },
     {
       "id": 6,
