@@ -190,4 +190,4 @@ def save_video(samples, vae, filename_prefix, fps, nvenc_gpu, cq, fp16_accumulat
         os.link(temporary, target)
     finally:
         temporary.unlink(missing_ok=True)
-    return {"ui": {"images": [{"filename": filename, "subfolder": subfolder, "type": "output"}]}}
+    return {"ui": {"images": [{"filename": filename, "subfolder": subfolder, "type": "output"}], "animated": [True]}}
