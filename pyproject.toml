@@ -1,15 +1,11 @@
 [project]
 name = "h3-x2-stream"
-version = "0.2.0"
+version = "0.2.1"
 description = "ComfyUI nodes for MiniMax H3: INT8 X2 VAE and asynchronous NVENC saving. 5-second 1088x1920 video with audio in about 60 s on an RTX 4070 12GB, about 30% faster than the FP16 X2 VAE."
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
 dependencies = ["av>=17.0.0", "safetensors>=0.7.0"]
-classifiers = [
-    "Operating System :: Microsoft :: Windows",
-    "Environment :: GPU :: NVIDIA CUDA",
-]
 
 [project.urls]
 Repository = "https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream"
