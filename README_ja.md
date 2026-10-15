@@ -40,6 +40,18 @@ MiniMax H3のX2 Detail VAEをComfyUI内でINT8へ変換し、デコードとNVID
 
 ## インストール
 
+### 方法A：ComfyUI-Manager（いちばん簡単）
+
+1. ComfyUI-Managerで **H3 X2 Stream** を検索してインストールします（[Comfy Registry: h3-x2-stream](https://registry.comfy.org/publishers/sepiablue-ai/nodes/h3-x2-stream)）。最近のComfyUIに内蔵されたManagerは、`--enable-manager` を付けて起動すると使えます。
+2. ComfyUIを再起動します。
+3. [`examples/assets`](examples/assets)の画像2枚を `ComfyUI/input/` にコピーします。Managerはサンプル画像をコピーしません。
+
+Managerが導入するのはコードとPythonの依存関係です。モデルは自分で配置してください（[用意するモデル](#用意するモデル)）。X2のINT8変換は、インストール時ではなく、**Prepare INT8 VAE**ノードをキューに入れたときにComfyUI内で行われます。2026年10月15日にComfyUI 0.38.0とComfyUI-Manager 4.2.2で、警告なしのインストール、再起動、全ノードの登録、exampleの読み込みを確認しました。この確認では動画生成までは行っていません。
+
+導入方法はどちらか一方にしてください。Managerは `custom_nodes/h3-x2-stream` に、Git・ZIPは `custom_nodes/ComfyUI-H3-X2-Stream` に入るため、両方あると同じノードが二重に登録されます。
+
+### 方法B：git clone・ZIP
+
 ComfyUIのフォルダから、次のコマンドでcloneします。
 
 ```shell
@@ -57,8 +69,6 @@ python -m pip install -r custom_nodes/ComfyUI-H3-X2-Stream/requirements.txt
 ```
 
 自分の環境に合う方だけを使ってください。システムPythonやグローバル環境には入れません。
-
-**ComfyUI-Managerについて：** Git URLからの導入がセキュリティ設定で許可されている環境では、`https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream`を指定できます。コードと依存関係を導入できる経路ですが、今回この経路の実機確認は行っていません。検証したのは上記の手動配置です。Registry登録は任意で、このパッケージは現在未登録です。Manager自体がGPUで重みを変換するわけではなく、**ワークフローをキューに入れるとPrepare INT8 VAEノードが変換します**。インストール時の`install.py`では変換しません。通常の利用ではターミナルで変換コマンドを実行する必要はありません。[Manager設定](https://docs.comfy.org/manager/configuration)／[Registry公開手順](https://docs.comfy.org/registry/publishing)。
 
 ## 用意するモデル
 

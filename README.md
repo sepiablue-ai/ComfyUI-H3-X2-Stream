@@ -40,6 +40,18 @@ No additional KJNodes or LatentUpscaler installation is required for the include
 
 ## Install
 
+### Option A: ComfyUI-Manager (easiest)
+
+1. In ComfyUI-Manager, search for **H3 X2 Stream** and install it ([Comfy Registry: h3-x2-stream](https://registry.comfy.org/publishers/sepiablue-ai/nodes/h3-x2-stream)). The Manager built into recent ComfyUI is enabled with `--enable-manager`.
+2. Restart ComfyUI.
+3. Copy the two images from [`examples/assets`](examples/assets) into `ComfyUI/input/`. Manager does not copy sample inputs.
+
+Manager installs the code and Python requirements; models are still placed by hand (see [Models](#models)). The X2 INT8 conversion runs inside ComfyUI when the **Prepare INT8 VAE** node is queued, not during installation. Tested on 2026-10-15 with ComfyUI 0.38.0 and ComfyUI-Manager 4.2.2: install without warnings, restart, all nodes registered and the examples loaded. Video generation was not part of that test.
+
+Use one installation method only. Manager installs into `custom_nodes/h3-x2-stream`, while a Git/ZIP install uses `custom_nodes/ComfyUI-H3-X2-Stream`; having both registers the same nodes twice.
+
+### Option B: Git clone or ZIP
+
 Run from the ComfyUI directory:
 
 ```shell
@@ -57,8 +69,6 @@ python -m pip install -r custom_nodes/ComfyUI-H3-X2-Stream/requirements.txt
 ```
 
 Use the command appropriate to your installation, not both. Do not install into a system/global Python.
-
-**ComfyUI-Manager:** use `https://github.com/sepiablue-ai/ComfyUI-H3-X2-Stream` for Git-URL installation where your Manager's security configuration permits it. This route can install the code and requirements, but was not part of the validation run; the manual installation above was tested. Registry publication is optional and this package is not currently registered. Manager does not perform GPU weight conversion itself: the **Prepare INT8 VAE node does that when the workflow is queued**. There is no conversion in `install.py` and no need to run a terminal conversion command. See [Manager configuration](https://docs.comfy.org/manager/configuration) and [Registry publishing](https://docs.comfy.org/registry/publishing).
 
 ## Models
 
