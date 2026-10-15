@@ -34,7 +34,7 @@ MiniMax H3のX2 Detail VAEをComfyUI内でINT8へ変換し、デコードとNVID
 
 - MiniMax H3、`BlockSparseAttention`、ConvRot INT8、H3の`decode(..., output_buffer=...)`に対応するComfyUI。**確認済みはComfyUI 0.37.0、commit `1568e6cfd04586a4b3c4e1817ea7dde09b1bf9e7`**です。再現時の基準はこの版です。以後の全バージョンでの互換性を保証するものではありません。
 - NVIDIA CUDA GPUと、PyAV/FFmpegの`h264_nvenc`。Windows・RTX 4070 12 GBで確認しました。AMD、Apple、CPUのみの実行、Linuxは未検証です。
-- 確認済みライブラリ：**Python 3.13.13、PyTorch 2.14.0+cu130、comfy-kitchen 0.2.35、PyAV 18.1.0、safetensors 0.8.0**。CUDA/PyTorchは通常のComfyUI導入手順で準備してください。このパッケージがPyTorchを自動交換することはありません。
+- 確認済みライブラリ：**Python 3.13.13、PyTorch 2.14.0+cu130、comfy-kitchen 0.2.35、PyAV 18.1.0、safetensors 0.8.0**。CUDA/PyTorchは通常のComfyUI導入手順で準備してください。このパッケージがPyTorchを自動交換することはありません。comfy-kitchenはComfyUI 0.37.0以降に同梱されるため、このパッケージでは導入しません。
 - `fp16_accumulation=true`にはPyTorchの`torch.backends.cuda.matmul.allow_fp16_accumulation`が必要です。対応しない版ではノードの設定をfalseにしてください。掲載した実測はtrueです。
 - 元のX2 VAE約**5.25 GB**と変換後約**2.83 GB**、そのほかのH3モデルの保存領域が必要です。変換中はCPUメモリにもチェックポイントを保持します。検証PCのRAMは約48 GiBで、それより小さいRAMでの下限は未確認です。
 

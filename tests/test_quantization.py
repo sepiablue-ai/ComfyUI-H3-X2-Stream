@@ -1,7 +1,9 @@
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import torch
 from safetensors.torch import save_file
@@ -35,6 +37,17 @@ class ConversionSafetyTests(unittest.TestCase):
             save_file({'decoder.proj_out.weight':torch.zeros(2,2,dtype=torch.float16)},str(source))
             with self.assertRaisesRegex(ValueError,'output projection'):
                 quantization.inspect_source(source)
+
+    def test_missing_comfy_kitchen_explains_required_comfyui(self):
+        with mock.patch.dict(sys.modules, {'comfy_kitchen.tensor.int8': None}):
+            with self.assertRaisesRegex(RuntimeError, 'ComfyUI 0.37.0 or newer'):
+                quantization.int8_layout()
+
+    def test_package_does_not_install_comfy_kitchen(self):
+        root = Path(__file__).resolve().parents[1]
+        requirements = [line.split('#')[0].strip() for line in (root/'requirements.txt').read_text(encoding='utf-8').splitlines()]
+        self.assertFalse(any(line.startswith('comfy-kitchen') for line in requirements))
+        self.assertNotIn('comfy-kitchen>=', (root/'pyproject.toml').read_text(encoding='utf-8'))
 
 
 if __name__ == '__main__':

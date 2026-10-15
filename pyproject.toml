@@ -5,7 +5,7 @@ description = "ComfyUI nodes for MiniMax H3: INT8 X2 VAE and asynchronous NVENC 
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.11"
-dependencies = ["av>=17.0.0", "safetensors>=0.7.0", "comfy-kitchen>=0.2.35"]
+dependencies = ["av>=17.0.0", "safetensors>=0.7.0"]
 classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Environment :: GPU :: NVIDIA CUDA",

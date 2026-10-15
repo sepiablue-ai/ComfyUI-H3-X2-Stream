@@ -18,6 +18,18 @@ SOURCE_SHA256 = "2296840f4acedcaa976688e7d7b97f7bf570b136e400385d3f46224011897aa
 DEFAULT_OUTPUT = "MiniMax-H3-X2-Detail-v1-decoder-int8-convrot.safetensors"
 
 
+def int8_layout():
+    """Return comfy-kitchen's INT8 layout, which ComfyUI 0.37.0+ installs and pins itself."""
+    try:
+        from comfy_kitchen.tensor.int8 import TensorWiseINT8Layout
+    except ImportError as error:
+        raise RuntimeError(
+            "INT8 ConvRot conversion needs comfy-kitchen's TensorWiseINT8Layout, which ComfyUI 0.37.0 or newer "
+            "installs (comfy-kitchen 0.2.35+). Update ComfyUI with its usual instructions; this package does not "
+            "install or replace comfy-kitchen.") from error
+    return TensorWiseINT8Layout
+
+
 def sha256(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -65,7 +77,7 @@ def convert(source, output, *, device="cuda:0", progress=None, check_cancel=None
         raise FileNotFoundError(source)
     if not torch.cuda.is_available() or torch.device(device).type != "cuda":
         raise RuntimeError("INT8 ConvRot conversion requires a CUDA GPU and a CUDA-enabled ComfyUI environment.")
-    from comfy_kitchen.tensor.int8 import TensorWiseINT8Layout
+    TensorWiseINT8Layout = int8_layout()
 
     linears = set(inspect_source(source))
     if sha256(source) != SOURCE_SHA256:

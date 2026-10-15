@@ -34,7 +34,7 @@ No additional KJNodes or LatentUpscaler installation is required for the include
 
 - A recent ComfyUI with native MiniMax H3, `BlockSparseAttention`, ConvRot INT8 support, and the H3 `decode(..., output_buffer=...)` interface. **Tested: ComfyUI 0.37.0, commit `1568e6cfd04586a4b3c4e1817ea7dde09b1bf9e7`.** This exact revision is the reproducible reference; compatibility with every later release is not implied.
 - NVIDIA CUDA GPU and a working `h264_nvenc` encoder in PyAV/FFmpeg. Tested on Windows and RTX 4070 12 GB. AMD, Apple, CPU-only execution and Linux have not been validated.
-- Tested libraries: **Python 3.13.13, PyTorch 2.14.0+cu130, comfy-kitchen 0.2.35, PyAV 18.1.0, safetensors 0.8.0**. Use the normal ComfyUI installation instructions for CUDA/PyTorch. This package does not automatically replace PyTorch.
+- Tested libraries: **Python 3.13.13, PyTorch 2.14.0+cu130, comfy-kitchen 0.2.35, PyAV 18.1.0, safetensors 0.8.0**. Use the normal ComfyUI installation instructions for CUDA/PyTorch. This package does not automatically replace PyTorch. comfy-kitchen comes with ComfyUI 0.37.0 or newer and is not installed by this package.
 - `fp16_accumulation=true` requires PyTorch's `torch.backends.cuda.matmul.allow_fp16_accumulation`. If your build does not expose it, disable the node option. The published timings used it enabled.
 - About **5.25 GB** for the original X2 VAE plus **2.83 GB** for the converted VAE, in addition to the other H3 models. Conversion also temporarily holds the checkpoint on the CPU. The tested PC had about 48 GiB RAM; a lower RAM minimum has not been established.
 
