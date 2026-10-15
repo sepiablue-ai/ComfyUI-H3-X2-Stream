@@ -4,7 +4,21 @@
 
 Prepare an INT8 version of the MiniMax H3 X2 Detail VAE inside ComfyUI, then decode and save video with a bounded asynchronous NVIDIA NVENC encoder. Includes an H3 FFN chunking node and ready-to-load 4-step examples.
 
-On an **RTX 4070 12 GB**, the development configuration generated **1088 × 1920, 124-frame, 24 fps video with audio in about 60 seconds**. This is a measured configuration, not a speed guarantee for arbitrary models, machines, or resolutions. See the results below and [Sayaka Benchmark](https://sayakabenchmark.pages.dev/) for the underlying workflow collection and comparisons.
+**On an RTX 4070 12 GB, 1088 × 1920, 124-frame (about 5 s) video with audio is generated in about 60 seconds, about 30% faster than using the X2 VAE as is (about 87 seconds).**
+
+| FL2VA, 544 × 960 sampling → 1088 × 1920 output | Case 01 | Case 02 |
+|---|---:|---:|
+| Baseline: X2 VAE kept in FP16 | 86.7 s (1 min 26.7 s) | 82.7 s (1 min 22.7 s) |
+| **This repo: INT8 X2 VAE + asynchronous NVENC saving** | **59.7 s (mean of 3)** | **59.8 s (mean of 3)** |
+| Saved | -27.0 s (-31%) | -22.9 s (-28%) |
+
+Development measurements on 2026-10-02 (baseline: one run each). The baseline is FL2VA 017 on [Sayaka Benchmark](https://sayakabenchmark.pages.dev/) ([workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/017-matlow-fused4-sla5-x2vae/workflow.json)); this repo's configuration is listed as FL2VA 022 ([workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/022-matlow-fused4-sla5-x2vae-int8-stream/workflow.json)) (entry numbers on the site). This is a measured configuration, not a speed guarantee for arbitrary models, machines, or resolutions. See [RTX 4070 measurements](#rtx-4070-measurements) for conditions.
+
+- **Works for Ref2VA too:** Ref2VA 020 ([workflow](https://sayakabenchmark.pages.dev/benchmarks/ref2va/020-matlow-fused4-sla5-x2vae-int8-stream/workflow.json)), which uses this repo's nodes, produced 1088 × 1920 output in 68.9 s (FP16 X2 Ref2VA 019: 91.6 s; one run each on Sayaka Benchmark).
+- **Even faster:** [ComfyUI-H3-LBH-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-LBH-X2-Stream) builds on this output and cuts 14 s video from 154.8 s to 116.6 s (about 25%).
+- **Less metallic voices:** [ComfyUI-H3-AudioFirst-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-AudioFirst-X2-Stream) generates the audio first and locks it.
+
+> Author: Kamimoto (かみもと) | Quick results on **[X (@sep_is_heim)](https://x.com/sep_is_heim)**, write-ups (Japanese) on **[note](https://note.com/sepiablue)** ([article index](https://note.com/sepiablue/n/n8e612c619a3e)).
 
 ## What is included
 
@@ -96,7 +110,7 @@ These additional sizes have **one run per mode**, so the differences are indicat
 
 ### Original streaming measurements — 2026-10-02
 
-Measured on **2026-10-02**, Windows, RTX 4070 12 GB. Seed 43, 124 frames / 24 fps (about 5.17 s), native audio, 544 × 960 sampling and 1088 × 1920 X2 output. The baseline is FL2VA `017-matlow-fused4-sla5-x2vae` from [Sayaka Benchmark](https://sayakabenchmark.pages.dev/).
+Measured on **2026-10-02**, Windows, RTX 4070 12 GB. Seed 43, 124 frames / 24 fps (about 5.17 s), native audio, 544 × 960 sampling and 1088 × 1920 X2 output. The baseline is FL2VA 017 from [Sayaka Benchmark](https://sayakabenchmark.pages.dev/) (4 steps at 544 × 960, SLA 5%, FP16 X2 VAE; [workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/017-matlow-fused4-sla5-x2vae/workflow.json)).
 
 | Configuration | Case 01, seconds | Case 02, seconds | Under 60 s |
 |---|---:|---:|---:|
@@ -122,6 +136,20 @@ INT8 conversion quantizes only 144 decoder block Linear weights using per-channe
 - **Conversion interrupted by a process crash:** a `.lock` or `.h3-x2-*` temporary file can remain in `models/vae/h3_x2_stream`. After confirming that no conversion process is running, remove only the stale file and retry. Normal errors/cancellation clean up automatically.
 - **Out of memory:** stop other GPU workloads or choose a smaller generation size. This node deliberately avoids ComfyUI's generic tiled OOM fallback, which would change the H3 decode path.
 - To uninstall, stop ComfyUI and remove this custom-node directory. Converted models are separate files under `models/vae/h3_x2_stream`; keep them or delete them explicitly. No global settings need reverting.
+
+## Author and related repositories
+
+I'm Kamimoto (かみもと). I measure and publish MiniMax H3 and ComfyUI speed-ups and VRAM reductions on an RTX 4070 12 GB.
+
+- X: [@sep_is_heim](https://x.com/sep_is_heim) — quick results with step counts, seconds and speed-ups
+- note: [かみもと｜ローカルAI生成](https://note.com/sepiablue) — setup guides and measured write-ups in Japanese ([article index](https://note.com/sepiablue/n/n8e612c619a3e))
+- [Sayaka Benchmark](https://sayakabenchmark.pages.dev/) — speed and quality comparison of H3 workflows
+
+| Repository | What it does |
+|---|---|
+| [ComfyUI-H3-LBH-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-LBH-X2-Stream) | 3 low-resolution steps + 1 high-resolution step; about 25% faster for 14 s video |
+| [ComfyUI-H3-AudioFirst-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-AudioFirst-X2-Stream) | Audio-first two-pass generation that reduces the metallic voice |
+| [ComfyUI-MiniMax-H3-W4A4-VSA](https://github.com/sepiablue-ai/ComfyUI-MiniMax-H3-W4A4-VSA) | Ref2VA acceleration with FC1 W4A4 and Streaming VSA |
 
 ## Attribution
 

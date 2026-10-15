@@ -4,7 +4,21 @@
 
 MiniMax H3のX2 Detail VAEをComfyUI内でINT8へ変換し、デコードとNVIDIA NVENCによる動画保存を並行実行するカスタムノードです。FFN分割ノードと、そのまま読み込める4ステップ版ワークフローも付属します。
 
-**RTX 4070 12 GBで、1088 × 1920・124フレーム・24 fps・音声付き動画を約60秒で生成**した構成を元にしています。任意のモデル・PC・解像度で1分未満になる保証ではありません。元のワークフローや比較動画は、[さやかベンチマーク](https://sayakabenchmark.pages.dev/)を参照してください。
+**RTX 4070 12 GBで、1088 × 1920・124フレーム（約5秒）・音声付き動画を約60秒で生成できます。VAEをそのまま使う場合（約87秒）から約3割短縮です。**
+
+| FL2VA・544 × 960生成 → 1088 × 1920出力 | Case 01 | Case 02 |
+|---|---:|---:|
+| 基準：X2 VAEをFP16のまま使用 | 86.7秒（1分26.7秒） | 82.7秒（1分22.7秒） |
+| **本repo：INT8 X2 VAE＋非同期NVENC保存** | **59.7秒（3回平均）** | **59.8秒（3回平均）** |
+| 短縮 | −27.0秒（−31%） | −22.9秒（−28%） |
+
+2026年10月2日の開発時の実測です（基準は各1回）。基準は[さやかベンチマーク](https://sayakabenchmark.pages.dev/)のFL2VA 017（[workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/017-matlow-fused4-sla5-x2vae/workflow.json)）で、本repoの構成はFL2VA 022（[workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/022-matlow-fused4-sla5-x2vae-int8-stream/workflow.json)）として掲載しています（番号はサイト上の登録番号）。任意のモデル・PC・解像度で1分未満になる保証ではありません。条件の詳細は[RTX 4070での実測](#rtx-4070での実測)にあります。
+
+- **Ref2VAでも使えます：** 参照画像から作るRef2VAでも、本repoのノードを使ったRef2VA 020（[workflow](https://sayakabenchmark.pages.dev/benchmarks/ref2va/020-matlow-fused4-sla5-x2vae-int8-stream/workflow.json)）は1088 × 1920出力で68.9秒でした（FP16 X2のRef2VA 019は91.6秒、どちらもさやかベンチマークの各1回）。
+- **さらに速く：** [ComfyUI-H3-LBH-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-LBH-X2-Stream)は本repoの出力を使い、14秒動画を154.8秒→116.6秒（約25%短縮）にします。
+- **声の金属っぽさを抑える：** [ComfyUI-H3-AudioFirst-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-AudioFirst-X2-Stream)は音声を先に作って固定する2パス生成です。
+
+> 作者：かみもと（Kamimoto）｜検証結果の速報は **[X（@sep_is_heim）](https://x.com/sep_is_heim)**、解説記事は **[note](https://note.com/sepiablue)**（[記事INDEX](https://note.com/sepiablue/n/n8e612c619a3e)）で公開しています。
 
 ## 入っているもの
 
@@ -96,7 +110,7 @@ API用JSONは[`examples/api`](examples/api)にあります。上級者向けに�
 
 ### 初回のストリーミング実測 — 2026年10月2日
 
-**2026年10月2日**、Windows、RTX 4070 12 GBで計測しました。seed 43、124フレーム／24 fps（約5.17秒）、モデル生成音声付き。生成解像度544 × 960、X2出力1088 × 1920です。比較元は[さやかベンチマーク](https://sayakabenchmark.pages.dev/)のFL2VA `017-matlow-fused4-sla5-x2vae`です。
+**2026年10月2日**、Windows、RTX 4070 12 GBで計測しました。seed 43、124フレーム／24 fps（約5.17秒）、モデル生成音声付き。生成解像度544 × 960、X2出力1088 × 1920です。比較元は[さやかベンチマーク](https://sayakabenchmark.pages.dev/)のFL2VA 017（544 × 960で4step・SLA 5%・FP16 X2 VAE、[workflow](https://sayakabenchmark.pages.dev/benchmarks/fl2va/017-matlow-fused4-sla5-x2vae/workflow.json)）です。
 
 | 構成 | Case 01・秒 | Case 02・秒 | 60秒未満 |
 |---|---:|---:|---:|
@@ -122,6 +136,20 @@ INT8変換対象はdecoder block内のLinear重み144個だけです。per-chann
 - **変換中にプロセスが異常終了：** `models/vae/h3_x2_stream`に`.lock`や`.h3-x2-*`一時ファイルが残る場合があります。変換プロセスが動いていないことを確認し、該当する残留ファイルだけを除いて再実行してください。通常のエラー／中断では自動清掃します。
 - **VRAM不足：** ほかのGPU処理を終えるか、生成サイズを下げてください。H3のデコード経路を保つため、一般的な3D tiled OOM fallbackへは切り替えません。
 - 削除する場合はComfyUIを停止してカスタムノードのフォルダを削除します。変換済みモデルは`models/vae/h3_x2_stream`に別保存されるので、必要に応じて明示的に残す／削除してください。グローバル設定の復元は不要です。
+
+## 作者・関連リポジトリ
+
+かみもと（Kamimoto）です。RTX 4070 12GBで、MiniMax H3とComfyUIの高速化・省VRAM化を実測しながら公開しています。
+
+- X：[@sep_is_heim](https://x.com/sep_is_heim) — step数・秒数・短縮率などの検証速報
+- note：[かみもと｜ローカルAI生成](https://note.com/sepiablue) — 導入方法と実測の解説記事（[記事INDEX](https://note.com/sepiablue/n/n8e612c619a3e)）
+- [さやかベンチマーク](https://sayakabenchmark.pages.dev/) — H3ワークフローの速度・画質比較
+
+| リポジトリ | 内容 |
+|---|---|
+| [ComfyUI-H3-LBH-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-LBH-X2-Stream) | 低解像度3step＋高解像度1step。14秒動画で約25%短縮 |
+| [ComfyUI-H3-AudioFirst-X2-Stream](https://github.com/sepiablue-ai/ComfyUI-H3-AudioFirst-X2-Stream) | 音声を先に作って固定し、金属的な響きを抑える2パス生成 |
+| [ComfyUI-MiniMax-H3-W4A4-VSA](https://github.com/sepiablue-ai/ComfyUI-MiniMax-H3-W4A4-VSA) | Ref2VAの高速化（FC1 W4A4、Streaming VSA） |
 
 ## 謝辞とライセンス
 
